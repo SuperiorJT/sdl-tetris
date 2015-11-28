@@ -1,12 +1,12 @@
 //
 //  math.cpp
-//  
+//
 //
 //  Created by Justin Miller on 11/27/15.
 //
 //
 
-#include "math.h"
+#include "utility.h"
 
 Vector2 Vector2::operator+(const Vector2& param) {
     Vector2 temp;

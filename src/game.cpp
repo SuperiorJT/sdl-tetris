@@ -17,7 +17,7 @@ bool Game::init(Vector2 screenDimens) {
         printf("Could not initialize SDL! Error: %s\n", SDL_GetError());
         success = false;
     } else {
-        window = SDL_CreateWindow("Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen.x, screen.y, SDL_WINDOW_SHOWN);
+        window = SDL_CreateWindow("Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(screen.x), int(screen.y), SDL_WINDOW_SHOWN);
         if (window == NULL) {
             printf("Window could not be created! Error: %s\n", SDL_GetError());
             success = false;
@@ -31,7 +31,6 @@ bool Game::init(Vector2 screenDimens) {
             }
         }
     }
-    
     return success;
 }
 
@@ -39,7 +38,7 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
     
     bool quit = false;
     const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-    float next_tick = SDL_GetTicks();
+    Uint32 next_tick = SDL_GetTicks();
     int loops;
     float interpolation;
     //Init Tetris
@@ -48,6 +47,7 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
     while(!quit) {
         loops = 0;
         while (SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
+			printf("Ticks: %u\n", next_tick);
             while(SDL_PollEvent(&e)) {
                 if (e.type == SDL_QUIT) {
                     quit = true;
