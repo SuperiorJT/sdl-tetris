@@ -1,0 +1,6 @@
+project(SDL-Tetris)
+include_directories(include)
+file(GLOB SOURCES "*.cpp")
+add_executable(SDL-Tetris ${SOURCES})
+target_link_libraries(SDL-Tetris ${SDL2_LIBRARY})
+install(TARGETS SDL-Tetris RUNTIME DESTINATION ${BIN_DIR})
