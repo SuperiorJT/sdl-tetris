@@ -10,19 +10,30 @@
 #define ____tetris__
 
 #include <stdio.h>
-
+#ifdef _WIN32
+#include <SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+#undef main
+#include <stack>
+class TetrisState;
 class Tetris {
-    enum GameState {
-        MENU, SETTINGS, PAUSED, PLAYING
-    };
 public:
+
     Tetris();
     ~Tetris();
     void init();
-    void handleInput();
+    void handleInput(SDL_Event e);
     void update();
     void render(float interpolation);
     void finish();
+
+	void pushState(TetrisState* newState);
+	void popState();
+
+private:
+	std::stack<TetrisState*> state;
 };
 
 #endif /* defined(____tetris__) */

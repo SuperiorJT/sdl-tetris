@@ -7,6 +7,7 @@
 //
 
 #include "game.h"
+#include "tetris.h"
 
 bool Game::init(Vector2 screenDimens) {
     screen = screenDimens;
@@ -27,7 +28,7 @@ bool Game::init(Vector2 screenDimens) {
                 printf("Renderer could not be created! Error: %s\n", SDL_GetError());
                 success = false;
             } else {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             }
         }
     }
@@ -41,7 +42,8 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
     Uint32 next_tick = SDL_GetTicks();
     int loops;
     float interpolation;
-    //Init Tetris
+	Tetris tetris;
+	tetris.init();
     SDL_Event e;
     
     while(!quit) {
@@ -52,16 +54,21 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
                 if (e.type == SDL_QUIT) {
                     quit = true;
                 }
-                //Tetris Handle Input
-                //Tetris Update
+				tetris.handleInput(e);
+				tetris.update();
             }
             next_tick += SKIP_TICKS;
             loops++;
         }
         
+		//Clear the screen
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+
         interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_tick) / float(SKIP_TICKS);
-        //Tetris Render
+		tetris.render(interpolation);
         
+		SDL_RenderPresent(renderer);
     }
     
     //Finish Tetris
