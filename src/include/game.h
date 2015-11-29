@@ -12,6 +12,7 @@
 #include <stdio.h>
 #ifdef _WIN32
 	#include <SDL.h>
+	#include <SDL_ttf.h>
 	#undef main
 #else
 	#include <SDL2/SDL.h>
