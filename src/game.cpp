@@ -1,6 +1,6 @@
 //
 //  game.cpp
-//  
+//
 //
 //  Created by Justin Miller on 11/27/15.
 //
@@ -12,9 +12,9 @@
 
 bool Game::init(Vector2 screenDimens) {
     screen = screenDimens;
-    
+
     bool success = true;
-    
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Could not initialize SDL! Error: %s\n", SDL_GetError());
         success = false;
@@ -45,7 +45,7 @@ bool Game::init(Vector2 screenDimens) {
 }
 
 void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
-    
+
     bool quit = false;
     const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
     Uint32 next_tick = SDL_GetTicks();
@@ -53,13 +53,14 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
 	Uint32 fps_ticks = SDL_GetTicks();
 	Uint32 fps = 0;
 	SDL_Rect fpsRenderRect = { 10, 10, 50, 30 };
+    SDL_Color fpsColor = {255, 255, 255, 255};
 
     int loops;
     float interpolation;
 	Tetris tetris;
 	tetris.init();
     SDL_Event e;
-    
+
     while(!quit) {
         loops = 0;
         while (SDL_GetTicks() > next_tick && loops < MAX_FRAMESKIP) {
@@ -80,7 +81,7 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
             next_tick += SKIP_TICKS;
             loops++;
         }
-        
+
 		//Clear the screen
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
@@ -89,25 +90,25 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
 		tetris.render(interpolation);
 
 		//Render FPS
-		SDL_Texture* fpsTexture = renderText("fps: " + std::to_string(fps), "../res/fonts/visitor.ttf", {255, 255, 255, 255}, 18, renderer);
+		SDL_Texture* fpsTexture = renderText("fps: " + std::to_string(fps), "../res/fonts/visitor.ttf", fpsColor, 18, renderer);
 		SDL_RenderCopy(renderer, fpsTexture, NULL, &fpsRenderRect);
 		fps_ticks = SDL_GetTicks();
 
 		SDL_RenderPresent(renderer);
     }
-    
+
     //Finish Tetris
     finish();
-    
+
 }
 
 void Game::finish() {
-    
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     renderer = NULL;
     window = NULL;
-    
+
 	TTF_Quit();
     SDL_Quit();
 }

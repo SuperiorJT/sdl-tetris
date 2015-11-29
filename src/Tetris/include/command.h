@@ -13,12 +13,13 @@
 class Command {
 public:
 	SDL_Keycode key;
+	Command() {};
 	virtual ~Command() {};
 	virtual void execute() {};
 };
 
 class StartGameCommand : public Command {
 public:
-	SDL_Keycode key = SDLK_RETURN;
+	StartGameCommand();
 	virtual void execute(Tetris tetris);
 };
