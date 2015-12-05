@@ -1,6 +1,8 @@
 # sdl-tetris
 Tetris implemented with SDL.
 
+Development Status: Working on EC Structure
+
 ## Install Instructions
 sdl-tetris is developed cross-platform. Becuase of this, you must build it using [CMake](https://cmake.org/download/).
 
