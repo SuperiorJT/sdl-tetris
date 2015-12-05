@@ -10,10 +10,8 @@
 #include "game.h"
 
 int main(int argc, const char * argv[]) {
-    Game game;
     Vector2 screen = Vector2(640, 480);
-    if (game.init(screen)) {
-        game.start();
-    }
+    Game* game = new Game(screen);
+    game->start();
     return 0;
 }
