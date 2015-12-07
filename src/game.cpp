@@ -10,6 +10,7 @@
 #include "shader.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "tetris.h"
 
@@ -142,6 +143,22 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
 	Tetris tetris;
 	tetris.init();
     SDL_Event e;
+    
+    GLuint MatrixID = glGetUniformLocation(_programID, "mvp");
+    
+    float testVal = 1.0f;
+    
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), _screen.y / _screen.x, 0.1f, 100.0f);
+    
+    glm::mat4 View = glm::lookAt(
+                                 glm::vec3(0, 0, 1),
+                                 glm::vec3(0, 0, 0),
+                                 glm::vec3(0, testVal, 0)
+                                 );
+    
+    glm::mat4 Model = glm::mat4(1.0f);
+    
+    glm::mat4 MVP = Projection * View * Model;
 
     while(!quit) {
         loops = 0;
@@ -156,6 +173,28 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
                 if (e.type == SDL_QUIT) {
                     quit = true;
                 }
+                if (e.type == SDL_KEYDOWN) {
+                    switch( e.key.keysym.sym ) {
+                        case SDLK_UP:
+                            testVal += 0.1f;
+                            break;
+                        case SDLK_DOWN:
+                            testVal -= 0.1f;
+                        default:
+                            break;
+                    }
+                }
+                
+                Projection = glm::perspective(glm::radians(45.0f), _screen.y / _screen.x, 0.1f, 100.0f);
+                
+                View = glm::lookAt(
+                                   glm::vec3(0, testVal, 4),
+                                   glm::vec3(0, 0, 0),
+                                   glm::vec3(0, 1, 0)
+                                   );
+                
+                MVP = Projection * View * Model;
+                
 				tetris.handleInput(e);
 				tetris.update();
             }
@@ -167,6 +206,8 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
         glClear ( GL_COLOR_BUFFER_BIT );
         
         glUseProgram(_programID);
+        
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, glm::value_ptr(MVP));
         
         glBindBuffer(GL_ARRAY_BUFFER, _VBO);
         glEnableVertexAttribArray(_vertexPos2DLocation);
