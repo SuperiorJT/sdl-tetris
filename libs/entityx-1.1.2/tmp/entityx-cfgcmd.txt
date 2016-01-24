@@ -1,0 +1,1 @@
+cmd='/Applications/CMake.app/Contents/bin/cmake;-DCMAKE_INSTALL_PREFIX=/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2;-GXcode;/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx'

@@ -37,6 +37,7 @@ private:
     GLint _vertexPos2DLocation;
     GLint _vertexColor;
     GLuint _VBO;
+    GLuint _cVBO;
     GLuint _IBO;
 
 	void init(Vector2 screenDimens);

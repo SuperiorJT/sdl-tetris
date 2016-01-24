@@ -28,6 +28,7 @@ void Game::init(Vector2 screenDimens) {
     _vertexPos2DLocation = -1;
     _vertexColor = -1;
     _VBO = 0;
+    _cVBO = 0;
     _IBO = 0;
 
     bool success = true;
@@ -99,14 +100,55 @@ bool Game::initGL() {
         
         //VBO data
         GLfloat vertexData[] = {
-            -0.5f, -0.5f, 1.0, 0.0, 0.0,
-            0.5f, -0.5f, 0.0, 1.0, 0.0,
-            0.5f,  0.5f, 0.0, 0.0, 1.0,
-            -0.5f,  0.5f, 1.0, 1.0, 1.0
+            -1.0, -1.0,  1.0,
+            1.0, -1.0,  1.0,
+            1.0,  1.0,  1.0,
+            -1.0,  1.0,  1.0,
+            // back
+            -1.0, -1.0, -1.0,
+            1.0, -1.0, -1.0,
+            1.0,  1.0, -1.0,
+            -1.0,  1.0, -1.0,
         };
         
+        GLfloat colorData[] = {
+            // front colors
+            1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0,
+            1.0, 1.0, 1.0,
+            // back colors
+            1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0,
+            1.0, 1.0, 1.0,
+        };
+        
+        glGenBuffers(1, &_cVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, _cVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(colorData), colorData, GL_STATIC_DRAW);
+        
         //IBO data
-        GLuint indexData[] = {0, 1, 2, 3};
+        GLuint indexData[] = {
+            // front
+            0, 1, 2,
+            2, 3, 0,
+            // top
+            1, 5, 6,
+            6, 2, 1,
+            // back
+            7, 6, 5,
+            5, 4, 7,
+            // bottom
+            4, 0, 3,
+            3, 7, 4,
+            // left
+            4, 5, 1,
+            1, 0, 4,
+            // right
+            3, 2, 6,
+            6, 7, 3,
+        };
         
         //Create VBO
         glGenBuffers(1, &_VBO);
@@ -121,6 +163,11 @@ bool Game::initGL() {
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
+        
+        // Enable depth test
+        glEnable(GL_DEPTH_TEST);
+        // Accept fragment if it closer to the camera than the former one
+        glDepthFunc(GL_LESS);
         
     }
     
@@ -146,15 +193,29 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
     
     GLuint MatrixID = glGetUniformLocation(_programID, "mvp");
     
-    float testVal = 1.0f;
+    bool moveUp = false;
+    bool moveDown = false;
+    bool moveLeft = false;
+    bool moveRight = false;
+    float testValY = 0.0f;
+    float testValX = 0.0f;
+    bool projectionMod = false;
+    float angle = 0.0f;
+    float prevAngle = angle;
     
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), _screen.y / _screen.x, 0.1f, 100.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(90.0f), _screen.x / _screen.y, 0.1f, 100.0f);
     
     glm::mat4 View = glm::lookAt(
                                  glm::vec3(0, 0, 1),
                                  glm::vec3(0, 0, 0),
-                                 glm::vec3(0, testVal, 0)
+                                 glm::vec3(0, 1, 0)
                                  );
+    
+    glm::mat4 Translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
+    
+    glm::mat4 Scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0));
+
+    glm::mat4 Rotate = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f));
     
     glm::mat4 Model = glm::mat4(1.0f);
     
@@ -176,34 +237,95 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
                 if (e.type == SDL_KEYDOWN) {
                     switch( e.key.keysym.sym ) {
                         case SDLK_UP:
-                            testVal += 0.1f;
+                            moveUp = true;
                             break;
                         case SDLK_DOWN:
-                            testVal -= 0.1f;
+                            moveDown = true;
+                            break;
+                        case SDLK_LEFT:
+                            moveLeft = true;
+                            break;
+                        case SDLK_RIGHT:
+                            moveRight = true;
+                            break;
+                        case SDLK_RETURN:
+                            projectionMod = !projectionMod;
                         default:
                             break;
                     }
                 }
-                
-                Projection = glm::perspective(glm::radians(45.0f), _screen.y / _screen.x, 0.1f, 100.0f);
-                
-                View = glm::lookAt(
-                                   glm::vec3(0, testVal, 4),
-                                   glm::vec3(0, 0, 0),
-                                   glm::vec3(0, 1, 0)
-                                   );
-                
-                MVP = Projection * View * Model;
-                
+                if (e.type == SDL_KEYUP) {
+                    switch( e.key.keysym.sym ) {
+                        case SDLK_UP:
+                            moveUp = false;
+                            break;
+                        case SDLK_DOWN:
+                            moveDown = false;
+                            break;
+                        case SDLK_LEFT:
+                            moveLeft = false;
+                            break;
+                        case SDLK_RIGHT:
+                            moveRight = false;
+                            break;
+                        default:
+                            break;
+                    }
+                }
 				tetris.handleInput(e);
-				tetris.update();
             }
+            
+            tetris.update();
+            
+            if (moveRight) {
+                testValX += 0.1f;
+            }
+            if (moveLeft) {
+                testValX -= 0.1f;
+            }
+            if (moveUp) {
+                testValY += 0.1f;
+            }
+            if (moveDown) {
+                testValY -= 0.1f;
+            }
+            
+            prevAngle = angle;
+            angle += 0.1f;
+            if (angle > 360.f) {
+                angle = 0.f;
+            }
+            
             next_tick += SKIP_TICKS;
             loops++;
         }
+        
+        interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_tick) / float(SKIP_TICKS);
+        
+        Projection = glm::perspective(glm::radians(45.0f), _screen.x / _screen.y, 0.1f, 100.0f);
+        
+        if (projectionMod) {
+            Projection = glm::ortho(-10.0f * (_screen.x / _screen.y), 10.0f * (_screen.x / _screen.y), -10.0f, 10.0f, 0.0f, 100.0f);
+        }
+        
+        View = glm::lookAt(
+                           glm::vec3(0, 0, 4),
+                           glm::vec3(0, 0, 0),
+                           glm::vec3(0, 1, 0)
+                           );
+        
+        Translate = glm::translate(glm::mat4(1.0f), glm::vec3(testValX, testValY, 0.0f));
+        
+        Scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5));
+        
+        Rotate = glm::rotate(glm::mat4(1.0f), glm::mix(prevAngle, angle, interpolation), glm::vec3(1.0f, 1.0f, 0.0f));
+        
+        Model = Translate * Rotate * Scale;
+        
+        MVP = Projection * View * Model;
 
 		//Clear the screen
-        glClear ( GL_COLOR_BUFFER_BIT );
+        glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glUseProgram(_programID);
         
@@ -211,19 +333,21 @@ void Game::start(const int TICKS_PER_SECOND, const int MAX_FRAMESKIP) {
         
         glBindBuffer(GL_ARRAY_BUFFER, _VBO);
         glEnableVertexAttribArray(_vertexPos2DLocation);
-        glVertexAttribPointer(_vertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+        glVertexAttribPointer(_vertexPos2DLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, _cVBO);
         glEnableVertexAttribArray(_vertexColor);
-        glVertexAttribPointer(_vertexColor, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+        glVertexAttribPointer(_vertexColor, 3, GL_FLOAT, GL_FALSE, 0, 0);
         
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
-        glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, NULL);
         
         glDisableVertexAttribArray(_vertexPos2DLocation);
         glDisableVertexAttribArray(_vertexColor);
         
         glUseProgram(NULL);
 
-        interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_tick) / float(SKIP_TICKS);
+        
 		tetris.render(interpolation);
 
 		//Render FPS
