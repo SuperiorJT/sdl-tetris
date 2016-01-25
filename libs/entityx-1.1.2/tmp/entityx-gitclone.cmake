@@ -4,21 +4,21 @@ endif()
 
 set(run 0)
 
-if("/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitinfo.txt" IS_NEWER_THAN "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt")
+if("D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitinfo.txt" IS_NEWER_THAN "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt")
   set(run 1)
 endif()
 
 if(NOT run)
-  message(STATUS "Avoiding repeated git clone, stamp file is up to date: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt'")
+  message(STATUS "Avoiding repeated git clone, stamp file is up to date: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt'")
   return()
 endif()
 
 execute_process(
-  COMMAND ${CMAKE_COMMAND} -E remove_directory "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND ${CMAKE_COMMAND} -E remove_directory "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   )
 if(error_code)
-  message(FATAL_ERROR "Failed to remove directory: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx'")
+  message(FATAL_ERROR "Failed to remove directory: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx'")
 endif()
 
 # try the clone 3 times incase there is an odd git clone issue
@@ -26,8 +26,8 @@ set(error_code 1)
 set(number_of_tries 0)
 while(error_code AND number_of_tries LESS 3)
   execute_process(
-    COMMAND "/usr/bin/git" clone "https://github.com/alecthomas/entityx.git" "entityx"
-    WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src"
+    COMMAND "D:/Git/cmd/git.exe" clone "https://github.com/alecthomas/entityx.git" "entityx"
+    WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src"
     RESULT_VARIABLE error_code
     )
   math(EXPR number_of_tries "${number_of_tries} + 1")
@@ -41,8 +41,8 @@ if(error_code)
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" checkout origin/0.1.x
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND "D:/Git/cmd/git.exe" checkout origin/0.1.x
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   )
 if(error_code)
@@ -50,33 +50,33 @@ if(error_code)
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" submodule init 
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND "D:/Git/cmd/git.exe" submodule init 
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   )
 if(error_code)
-  message(FATAL_ERROR "Failed to init submodules in: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx'")
+  message(FATAL_ERROR "Failed to init submodules in: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx'")
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" submodule update --recursive 
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND "D:/Git/cmd/git.exe" submodule update --recursive 
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   )
 if(error_code)
-  message(FATAL_ERROR "Failed to update submodules in: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx'")
+  message(FATAL_ERROR "Failed to update submodules in: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx'")
 endif()
 
 # Complete success, update the script-last-run stamp file:
 #
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E copy
-    "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitinfo.txt"
-    "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt"
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+    "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitinfo.txt"
+    "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt"
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   )
 if(error_code)
-  message(FATAL_ERROR "Failed to copy script-last-run stamp file: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt'")
+  message(FATAL_ERROR "Failed to copy script-last-run stamp file: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx-stamp/entityx-gitclone-lastrun.txt'")
 endif()
 

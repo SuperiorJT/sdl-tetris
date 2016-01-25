@@ -3,8 +3,8 @@ if("origin/0.1.x" STREQUAL "")
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" rev-list --max-count=1 HEAD
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND "D:/Git/cmd/git.exe" rev-list --max-count=1 HEAD
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   OUTPUT_VARIABLE head_sha
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -14,8 +14,8 @@ if(error_code)
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" show-ref origin/0.1.x
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND "D:/Git/cmd/git.exe" show-ref origin/0.1.x
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   OUTPUT_VARIABLE show_ref_output
   )
 # If a remote ref is asked for, which can possibly move around,
@@ -40,8 +40,8 @@ endif()
 # This will fail if the tag does not exist (it probably has not been fetched
 # yet).
 execute_process(
-  COMMAND "/usr/bin/git" rev-list --max-count=1 origin/0.1.x
-  WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+  COMMAND "D:/Git/cmd/git.exe" rev-list --max-count=1 origin/0.1.x
+  WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
   RESULT_VARIABLE error_code
   OUTPUT_VARIABLE tag_sha
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -50,8 +50,8 @@ execute_process(
 # Is the hash checkout out that we want?
 if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
   execute_process(
-    COMMAND "/usr/bin/git" fetch
-    WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+    COMMAND "D:/Git/cmd/git.exe" fetch
+    WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
     RESULT_VARIABLE error_code
     )
   if(error_code)
@@ -61,8 +61,8 @@ if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
   if(is_remote_ref)
     # Check if stash is needed
     execute_process(
-      COMMAND "/usr/bin/git" status --porcelain
-      WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+      COMMAND "D:/Git/cmd/git.exe" status --porcelain
+      WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
       RESULT_VARIABLE error_code
       OUTPUT_VARIABLE repo_status
       )
@@ -75,8 +75,8 @@ if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
     # perform git pull --rebase
     if(need_stash)
       execute_process(
-        COMMAND "/usr/bin/git" stash save --quiet
-        WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+        COMMAND "D:/Git/cmd/git.exe" stash save --quiet
+        WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
         RESULT_VARIABLE error_code
         )
       if(error_code)
@@ -86,61 +86,61 @@ if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
 
     # Pull changes from the remote branch
     execute_process(
-      COMMAND "/usr/bin/git" rebase ${git_remote}/${git_tag}
-      WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+      COMMAND "D:/Git/cmd/git.exe" rebase ${git_remote}/${git_tag}
+      WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
       RESULT_VARIABLE error_code
       )
     if(error_code)
       # Rebase failed: Restore previous state.
       execute_process(
-        COMMAND "/usr/bin/git" rebase --abort
-        WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+        COMMAND "D:/Git/cmd/git.exe" rebase --abort
+        WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
       )
       if(need_stash)
         execute_process(
-          COMMAND "/usr/bin/git" stash pop --index --quiet
-          WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+          COMMAND "D:/Git/cmd/git.exe" stash pop --index --quiet
+          WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
           )
       endif()
-      message(FATAL_ERROR "\nFailed to rebase in: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx/'.\nYou will have to resolve the conflicts manually")
+      message(FATAL_ERROR "\nFailed to rebase in: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx/'.\nYou will have to resolve the conflicts manually")
     endif()
 
     if(need_stash)
       execute_process(
-        COMMAND "/usr/bin/git" stash pop --index --quiet
-        WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+        COMMAND "D:/Git/cmd/git.exe" stash pop --index --quiet
+        WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
         RESULT_VARIABLE error_code
         )
       if(error_code)
         # Stash pop --index failed: Try again dropping the index
         execute_process(
-          COMMAND "/usr/bin/git" reset --hard --quiet
-          WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+          COMMAND "D:/Git/cmd/git.exe" reset --hard --quiet
+          WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
           RESULT_VARIABLE error_code
           )
         execute_process(
-          COMMAND "/usr/bin/git" stash pop --quiet
-          WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+          COMMAND "D:/Git/cmd/git.exe" stash pop --quiet
+          WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
           RESULT_VARIABLE error_code
           )
         if(error_code)
           # Stash pop failed: Restore previous state.
           execute_process(
-            COMMAND "/usr/bin/git" reset --hard --quiet ${head_sha}
-            WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+            COMMAND "D:/Git/cmd/git.exe" reset --hard --quiet ${head_sha}
+            WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
           )
           execute_process(
-            COMMAND "/usr/bin/git" stash pop --index --quiet
-            WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+            COMMAND "D:/Git/cmd/git.exe" stash pop --index --quiet
+            WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
           )
-          message(FATAL_ERROR "\nFailed to unstash changes in: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx/'.\nYou will have to resolve the conflicts manually")
+          message(FATAL_ERROR "\nFailed to unstash changes in: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx/'.\nYou will have to resolve the conflicts manually")
         endif()
       endif()
     endif()
   else()
     execute_process(
-      COMMAND "/usr/bin/git" checkout origin/0.1.x
-      WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx"
+      COMMAND "D:/Git/cmd/git.exe" checkout origin/0.1.x
+      WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx"
       RESULT_VARIABLE error_code
       )
     if(error_code)
@@ -149,12 +149,12 @@ if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
   endif()
 
   execute_process(
-    COMMAND "/usr/bin/git" submodule update --recursive 
-    WORKING_DIRECTORY "/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx/"
+    COMMAND "D:/Git/cmd/git.exe" submodule update --recursive 
+    WORKING_DIRECTORY "D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx/"
     RESULT_VARIABLE error_code
     )
   if(error_code)
-    message(FATAL_ERROR "Failed to update submodules in: '/Users/justinmiller/Documents/workspace/sdl-tetris/libs/entityx-1.1.2/src/entityx/'")
+    message(FATAL_ERROR "Failed to update submodules in: 'D:/Repos/sdl-tetris/libs/entityx-1.1.2/src/entityx/'")
   endif()
 endif()
 

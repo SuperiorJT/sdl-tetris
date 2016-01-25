@@ -4,6 +4,8 @@ include_directories(
 
 set(GLEW_SOURCE
 	glew-1.13.0/src/glew.c
+	glew-1.13.0/src/glewinfo.c
+	glew-1.13.0/src/visualinfo.c
 )
 
 set(GLEW_HEADERS
